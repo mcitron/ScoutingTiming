@@ -1,0 +1,14 @@
+<use name="DataFormats/TrackReco"/>
+<use name="FWCore/Framework"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/PluginManager"/>
+<use name="Geometry/CaloGeometry"/>
+<use name="DataFormats/Scouting"/>
+<use name="DataFormats/GeometryCommonDetAlgo"/>
+<use name="Geometry/Records"/>
+<use name="CommonTools/UtilAlgos"/>
+<use name="PhysicsTools/UtilAlgos"/>
+<use name="DataFormats/GeometryVector"/>
+<use name="DataFormats/Math"/>
+<use name="DataFormats/METReco"/>
+<flags EDM_PLUGIN="1"/>
