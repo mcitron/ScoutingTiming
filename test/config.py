@@ -19,7 +19,8 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
-        'file:/afs/cern.ch/work/m/mcitron/scouting/CMSSW_15_0_12/src/outputScoutingPF0.root',
+        # 'file:/afs/cern.ch/work/m/mcitron/scouting/CMSSW_15_0_12/src/outputScoutingPF0.root',
+        'file:/afs/cern.ch/work/m/mcitron/scouting/CMSSW_15_0_12/src/outputScoutingPF1.root'
         # 'file:/afs/cern.ch/work/m/mcitron/scouting/CMSSW_15_0_12/src/outputScoutingPF1.root'
         # 'file:/vols/build/cms/mc3909/timingCMSSW/CMSSW_8_0_27/src/ecalTiming/T1qqqqLL10000/T1qqqqLL1000_AOD_all_10000.root',
         # 'file:/vols/build/cms/mc3909/timingCMSSW/CMSSW_8_0_27/src/ecalTiming/T1qqqqLL1000/T1qqqqLL1000_AOD_500To999.root',
@@ -41,6 +42,6 @@ process.testScoutingTiming = cms.EDAnalyzer("ScoutingTimingAnalyzer",
 #     # fastCloning = cms.untracked.bool(False)
 #     )
 process.TFileService = cms.Service("TFileService",
-        fileName = cms.string("test.root")
+        fileName = cms.string("test1.root")
         )
 process.path = cms.Path(process.testScoutingTiming)
