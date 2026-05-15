@@ -38,6 +38,10 @@ Implementation:
 #include "DataFormats/Scouting/interface/Run3ScoutingPFJet.h"
 #include "DataFormats/Scouting/interface/Run3ScoutingEBRecHit.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "FWCore/Common/interface/TriggerNames.h"
 
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
@@ -72,6 +76,8 @@ class ScoutingTimingAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResou
         edm::ESGetToken<CaloGeometry, CaloGeometryRecord> esToken;
         edm::EDGetTokenT<std::vector<Run3ScoutingPFJet>> pfJetsToken_;
         edm::EDGetTokenT<std::vector<Run3ScoutingEBRecHit>> ebRecHitsToken_;
+        edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken;
+        edm::EDGetTokenT<edm::TriggerResults> triggerResultsRerunToken;
         TTree * timeTree;
 
         std::vector<double> *v_caloCellPhi = new std::vector<double>();
@@ -128,7 +134,9 @@ class ScoutingTimingAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResou
 ScoutingTimingAnalyzer::ScoutingTimingAnalyzer(const edm::ParameterSet& iPSet)
     : esToken(esConsumes()),
     pfJetsToken_(consumes(iPSet.getParameter<edm::InputTag>("pfJetsTag"))),
-    ebRecHitsToken_(consumes(iPSet.getParameter<edm::InputTag>("ebRecHitsTag"))){
+    ebRecHitsToken_(consumes(iPSet.getParameter<edm::InputTag>("ebRecHitsTag"))),
+    triggerResultsToken(consumes(iPSet.getParameter<edm::InputTag>("triggerResultsTag"))),
+    triggerResultsRerunToken(consumes(iPSet.getParameter<edm::InputTag>("triggerResultsRerunTag"))){
 	// #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
 	//   setupDataToken_ = esConsumes<SetupData, SetupRecord>();
 	// #endif
@@ -200,6 +208,8 @@ void ScoutingTimingAnalyzer::analyze(const edm::Event& iEvent, const edm::EventS
     auto const& pG = iSetup.getData(esToken);
     auto const& pfJets = iEvent.get(pfJetsToken_);
     auto const& ebRecHits = iEvent.get(ebRecHitsToken_);
+    auto const& triggerResults = iEvent.get(triggerResultsToken);
+    auto const& triggerResultsRerun = iEvent.get(triggerResultsRerunToken);
     v_caloCellPhi->clear();
     v_caloCellEta->clear();
     v_caloCellFlags->clear();
@@ -235,6 +245,40 @@ void ScoutingTimingAnalyzer::analyze(const edm::Event& iEvent, const edm::EventS
     v_pfJetNeutralHadEnergy->clear();
     v_pfJetChargedEmEnergy->clear();
     v_pfJetNeutralEmEnergy->clear();
+    bool delayedJetPathPass = false;
+    bool scoutingJetPathPass = false;
+     if (true) {
+        const edm::TriggerNames & triggerNames = iEvent.triggerNames(triggerResults);
+        // const std::vector<std::string> & names = triggerNames.triggerNames();
+        // for (auto name: names){
+        // }
+        // std::cout << triggerResults.size() << std::end;
+        for (unsigned int i = 0; i < triggerResults.size(); ++i) {
+            const auto &trigname = triggerNames.triggerName(i);
+            std::cout << trigname << std::endl;
+            if (trigname.find("HLT_HT430_DelayedJet40_SingleDelay2nsInclusive_v13_v") != std::string::npos) delayedJetPathPass = triggerResults.accept(i);
+        }
+     }
+     if (true) {
+        const edm::TriggerNames & triggerNames = iEvent.triggerNames(triggerResultsRerun);
+        const std::vector<std::string> & names = triggerNames.triggerNames();
+        // std::cout << triggerResultsRerun.size() << std::end;
+        for (unsigned int i = 0; i < triggerResultsRerun.size(); ++i) {
+            const auto &trigname = triggerNames.triggerName(i);
+            if (trigname.find("HLT_HT430_DelayedJet40_SingleDelay2nsInclusive_v13_v") != std::string::npos) scoutingJetPathPass = triggerResultsRerun.accept(i);
+        }
+     }
+     if (delayedJetPathPass || scoutingJetPathPass){
+         std::cout << "DJ: "<< delayedJetPathPass << " SJ " << scoutingJetPathPass << std::endl;
+     }
+     // if (triggerResultsRerun.isValid()) {
+     //    const edm::TriggerNames & triggerNames = iEvent.triggerNames(*triggerResultsRerun);
+     //    const std::vector<std::string> & names = triggerNames.triggerNames();
+     //    for (unsigned int i = 0; i < triggerResultsRerun->size(); ++i) {
+     //        const auto &trigname = triggerNames.triggerName(i);
+     //        if (trigname.find("DST_PFScouting_JetHT_v") != std::string::npos) scoutingJetPathPass = triggerResultsRerun->accept(i);
+     //    }
+     // }
     for (auto const& ebRecHit : ebRecHits) {
 	if (ebRecHit.energy() < 0.5) continue;
 	GlobalPoint pCell=pG.getPosition(ebRecHit.detId());

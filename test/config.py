@@ -20,7 +20,7 @@ process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
         # 'file:/afs/cern.ch/work/m/mcitron/scouting/CMSSW_15_0_12/src/outputScoutingPF0.root',
-        'file:/afs/cern.ch/work/m/mcitron/scouting/CMSSW_15_0_12/src/outputScoutingPF1.root'
+        'file:/home/users/mcitron/scouting/CMSSW_15_0_12/src/outputScoutingPF0.root'
         # 'file:/afs/cern.ch/work/m/mcitron/scouting/CMSSW_15_0_12/src/outputScoutingPF1.root'
         # 'file:/vols/build/cms/mc3909/timingCMSSW/CMSSW_8_0_27/src/ecalTiming/T1qqqqLL10000/T1qqqqLL1000_AOD_all_10000.root',
         # 'file:/vols/build/cms/mc3909/timingCMSSW/CMSSW_8_0_27/src/ecalTiming/T1qqqqLL1000/T1qqqqLL1000_AOD_500To999.root',
@@ -35,7 +35,10 @@ process.source = cms.Source("PoolSource",
 
 process.testScoutingTiming = cms.EDAnalyzer("ScoutingTimingAnalyzer",
         pfJetsTag = cms.InputTag( "hltScoutingPFPacker","","HLTX"),
-          ebRecHitsTag = cms.InputTag("hltScoutingRecHitPacker", "EB", "HLTX"))
+          ebRecHitsTag = cms.InputTag("hltScoutingRecHitPacker", "EB", "HLTX"),
+            triggerResultsTag = cms.InputTag("TriggerResults","","SIM"),
+            triggerResultsRerunTag = cms.InputTag("TriggerResults","","HLTX") 
+          )
 
 # process.out = cms.OutputModule("PoolOutputModule",
 #     fileName = cms.untracked.string("test.root"),
