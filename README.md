@@ -54,11 +54,11 @@ test/
 
 ## Setup
 
-This package is meant to be built inside a CMSSW release area. It was developed against `CMSSW_15_0_12` with global tag `142X_mcRun3_2025_realistic_v7`.
+This package is meant to be built inside a CMSSW release area. It was developed against `CMSSW_15_0_12` with global tag `142X_mcRun3_2025_realistic_v7`. This global tag is for MC only, so maybe one wants to change to the relevant one in their analysis. Also, later HLT Scout is reconstructed using CMSSW_15_0_*, where * can be >12, while 2026 runs are reconstructed with CMSSW_16, so be careful about compatibility issues.
 
 ```bash
-cmsrel CMSSW_15_0_12
-cd CMSSW_15_0_12/src
+cmsrel CMSSW_15_0_NEWEST_RELEASE
+cd CMSSW_15_0_NEWEST_RELEASE/src
 cmsenv
 
 # Place the package under a subsystem directory, e.g. ScoutingTiming/
@@ -92,6 +92,8 @@ Output is written to the `TFileService` file (`test1.root` by default).
 - The jet time is an ET-weighted (E·sin θ) average of associated cell times, with no cell-level quality cuts applied in the producer — apply flag-based selections offline using `caloCell_flags`.
 - The two `TriggerResults` inputs let you compare the delayed-jet decision from the original HLT menu against a re-run of the path; both are stored per event.
 - The trigger match is a substring test on `HLT_HT430_DelayedJet40_SingleDelay2nsInclusive_v`, so it picks up any version of the path.
+- ROOT files are stored in PF0 and PF1 two directories to split datasets. They are orthogonal, so process both to get the full luminosity
+- Add two txt files containing locations of all 2025E run
 
 ## Author
 
